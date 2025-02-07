@@ -136,7 +136,10 @@ for type in MR_TYPES:
     logging.debug("{stat} = {r}".format(r=record, stat=record['status']))
     if 'deleted' != record['status']:
 
-      type_id = "{n}_{t}_{i}".format(n=MR_TYPES[type], t=type, i=record['MRGID'])
+      # remove non-alphanumeric chars 
+      typename = re.sub(r'[^a-zA-Z0-9]', '_', MR_TYPES[type])
+      type_id = "{n}_{t}_{i}".format(n=typename, t=type, i=record['MRGID'])
+        
       meta = getRecordMetadata(mrid=record['MRGID'])
       writeRDFFile(graph=meta, format=RDF_FORMAT, filename="{id}_{name}.{ext}".format(id=type_id, name='metadata', ext=RDF_EXT))
       
