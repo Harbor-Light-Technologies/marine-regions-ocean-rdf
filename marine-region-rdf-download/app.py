@@ -20,6 +20,7 @@ logging.basicConfig(
 
 # {TypeID} : {Type Name}
 MR_TYPES = {
+    ### Evaluated these and decided not to include ###
     #22: 'Island',
     #28: 'Strait',
     #30: 'Ridge',
