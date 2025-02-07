@@ -59,6 +59,11 @@ MR_TYPES = {
     272: 'IHO Sea Area',  
 }
 
+RDF_FORMAT = 'turtle'
+RDF_EXT = 'ttl'
+
+OUTPUT = '/output/'
+
 HTTP_STATUS_OK = 200
 HTTP_STATUS_NOT_FOUND = 404
 
@@ -68,7 +73,14 @@ GET_RECORD_METADATA = 'https://marineregions.org/rest/getGazetteerRecordByMRGID.
 GET_GEOMETRY = 'https://marineregions.org/rest/getGazetteerGeometries.jsonld/{mrid}/'
 
 
-
+def writeRDFFile(graph, format, filename):
+  logging.debug(graph.serialize(format='ttl'))
+  if not os.path.exists(OUTPUT):
+    os.makedirs(OUTPUT)
+  dest = "{dir}{filename}".format(dir=OUTPUT, filename=filename)
+  graph.serialize(destination=dest, format=format)
+  logging.info('Wrote file:' + dest)
+    
 def getRecordMetadata(mrid):
   res = requests.get(GET_RECORD_METADATA.format(mrid=mrid))
   record = res.json()
@@ -100,7 +112,7 @@ def getMRTypeRecords(type):
     if HTTP_STATUS_OK == res.status_code:
 
       for region in res.json():
-        print("{id} - {name} (status={status})".format(id=region['MRGID'], name=region['preferredGazetteerName'], status=region['status']))
+        logging.info("{id} - {name} (status={status})".format(id=region['MRGID'], name=region['preferredGazetteerName'], status=region['status']))
 
       records.extend(res.json())
       offset += 1
@@ -114,18 +126,21 @@ def getMRTypeRecords(type):
 
 
 for type in MR_TYPES:
-  print()
-  print("*** {type} ***".format(type=MR_TYPES[type]))
-  print()
+  logging.info()
+  logging.info("*** {type} ***".format(type=MR_TYPES[type]))
+  logging.info()
   records = getMRTypeRecords(MR_TYPES[type])
 
   for record in records:
-    print("{stat} = {r}".format(r=record, stat=record['status']))
+    logging.debug("{stat} = {r}".format(r=record, stat=record['status']))
     if 'deleted' != record['status']:
+
+      type_id = "{n}_{t}_{i}".format(n=MR_TYPES[type], t=type, i=record['MRGID'])
       meta = getRecordMetadata(mrid=record['MRGID'])
-      print(meta.serialize(format='ttl'))
+      writeRDFFile(graph=meta, format=RDF_FORMAT, filename="{id}_{name}.{ext}".format(id=type_id, name='metadata', ext=RDF_EXT)
+      
       geom = getRecordGeometry(mrid=record['MRGID'])
-      print(geom.serialize(format='ttl'))
+      writeRDFFile(graph=geom, format=RDF_FORMAT, filename="{id}_{name}.{ext}".format(id=type_id, name='geometry', ext=RDF_EXT)
     else:
-      logging.warning("*** Skipping deleted record")
+      logging.warning("*** Skipping deleted record: {r}".format(r=record['MRGID'])
     
