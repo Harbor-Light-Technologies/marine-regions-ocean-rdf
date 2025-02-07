@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  marine-region-rdf-download:
+    build: .
+    working_dir: /code
+    network_mode: host
+    volumes:
+      - ./marine-region-rdf-download:/code
+      - ./output:/output
