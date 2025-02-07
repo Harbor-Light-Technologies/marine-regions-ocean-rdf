@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+import os
 import requests
 import sys
 import unicodedata
@@ -126,9 +127,9 @@ def getMRTypeRecords(type):
 
 
 for type in MR_TYPES:
-  logging.info()
+  logging.info('')
   logging.info("*** {type} ***".format(type=MR_TYPES[type]))
-  logging.info()
+  logging.info('')
   records = getMRTypeRecords(MR_TYPES[type])
 
   for record in records:
@@ -137,10 +138,10 @@ for type in MR_TYPES:
 
       type_id = "{n}_{t}_{i}".format(n=MR_TYPES[type], t=type, i=record['MRGID'])
       meta = getRecordMetadata(mrid=record['MRGID'])
-      writeRDFFile(graph=meta, format=RDF_FORMAT, filename="{id}_{name}.{ext}".format(id=type_id, name='metadata', ext=RDF_EXT)
+      writeRDFFile(graph=meta, format=RDF_FORMAT, filename="{id}_{name}.{ext}".format(id=type_id, name='metadata', ext=RDF_EXT))
       
       geom = getRecordGeometry(mrid=record['MRGID'])
-      writeRDFFile(graph=geom, format=RDF_FORMAT, filename="{id}_{name}.{ext}".format(id=type_id, name='geometry', ext=RDF_EXT)
+      writeRDFFile(graph=geom, format=RDF_FORMAT, filename="{id}_{name}.{ext}".format(id=type_id, name='geometry', ext=RDF_EXT))
     else:
-      logging.warning("*** Skipping deleted record: {r}".format(r=record['MRGID'])
-    
+      logging.warning("*** Skipping deleted record: {r}".format(r=record['MRGID']))
+

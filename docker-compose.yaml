@@ -7,4 +7,4 @@ services:
     network_mode: host
     volumes:
       - ./marine-region-rdf-download:/code
-      - ./output:/output
+      - ./output/rdf:/output
